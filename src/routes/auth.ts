@@ -11,7 +11,10 @@ function generateOTP(): string {
 
 // Send OTP via Africa's Talking (or console in dev)
 async function sendOTP(phone: string, code: string): Promise<void> {
-  if (process.env.NODE_ENV === 'development' || !process.env.AT_API_KEY || process.env.AT_API_KEY === 'your-africastalking-api-key') {
+  const hasATKey = process.env.AT_API_KEY && process.env.AT_API_KEY !== 'your-africastalking-api-key';
+
+  if (!hasATKey) {
+    // Log OTP to Railway logs for testing
     console.log(`📱 OTP for ${phone}: ${code}`);
     return;
   }
@@ -56,7 +59,7 @@ router.post('/send-otp', async (req: Request, res: Response) => {
     await sendOTP(phone, code);
     res.json({ success: true, message: 'OTP sent successfully' });
   } catch (err) {
-    console.error(err);
+    console.error('OTP error:', err);
     res.status(500).json({ error: 'Failed to send OTP' });
   }
 });
