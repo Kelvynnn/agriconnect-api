@@ -30,7 +30,7 @@ async function sendOTP(phone: string, code: string): Promise<void> {
   await fetch('https://api.africastalking.com/version1/messaging', {
     method: 'POST',
     headers: {
-      'apiKey': process.env.AT_API_KEY,
+      'apiKey': process.env.AT_API_KEY as string,
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',
     },
