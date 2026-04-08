@@ -21,6 +21,16 @@ app.get('/health', (_, res) => {
   res.json({ status: 'ok', service: 'AgriConnect API', country: 'Ghana', version: '1.0.0' });
 });
 
+// One-time setup endpoint to create tables
+app.get('/setup', async (_, res) => {
+  try {
+    await runMigration();
+    res.json({ success: true, message: 'Database tables created successfully' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.use('/auth', authRoutes);
 app.use('/farmers', farmerRoutes);
 app.use('/listings', listingRoutes);
