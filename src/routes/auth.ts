@@ -44,23 +44,19 @@ router.post('/send-otp', async (req: Request, res: Response) => {
   if (!phone) return res.status(400).json({ error: 'Phone number required' });
 
   const code = generateOTP();
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
   try {
-    // Invalidate old OTPs for this phone
     await pool.query('UPDATE otp_codes SET used = true WHERE phone = $1', [phone]);
-
-    // Store new OTP
     await pool.query(
       'INSERT INTO otp_codes (phone, code, expires_at) VALUES ($1, $2, $3)',
       [phone, code, expiresAt]
     );
-
     await sendOTP(phone, code);
     res.json({ success: true, message: 'OTP sent successfully' });
-  } catch (err) {
-    console.error('OTP error:', err);
-    res.status(500).json({ error: 'Failed to send OTP' });
+  } catch (err: any) {
+    console.error('OTP error:', err?.message || err);
+    res.status(500).json({ error: 'Failed to send OTP', detail: err?.message });
   }
 });
 
