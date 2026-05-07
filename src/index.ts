@@ -8,6 +8,7 @@ import farmerRoutes from './routes/farmers';
 import listingRoutes from './routes/listings';
 import orderRoutes from './routes/orders';
 import notificationRoutes from './routes/notifications';
+import customerRoutes from './routes/customer';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use('/farmers', farmerRoutes);
 app.use('/listings', listingRoutes);
 app.use('/orders', orderRoutes);
 app.use('/notifications', notificationRoutes);
+app.use('/customer', customerRoutes);
 
 app.use((_, res) => res.status(404).json({ error: 'Route not found' }));
 

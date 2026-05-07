@@ -89,3 +89,21 @@ CREATE INDEX IF NOT EXISTS idx_orders_farmer ON orders(farmer_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_notifications_farmer ON notifications(farmer_id);
 CREATE INDEX IF NOT EXISTS idx_otp_phone ON otp_codes(phone);
+
+-- Customers (buyers)
+CREATE TABLE IF NOT EXISTS customers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(100) NOT NULL,
+  phone VARCHAR(20) UNIQUE NOT NULL,
+  buyer_type VARCHAR(20) CHECK (buyer_type IN ('household', 'restaurant', 'wholesaler')) DEFAULT 'household',
+  location VARCHAR(100),
+  address TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Add customer_id to orders (nullable for backward compat)
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_id UUID REFERENCES customers(id);
+
+CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
+CREATE INDEX IF NOT EXISTS idx_orders_customer ON orders(customer_id);
